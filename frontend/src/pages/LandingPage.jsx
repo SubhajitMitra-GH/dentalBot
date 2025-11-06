@@ -15,14 +15,14 @@ function LandingPage() {
          style={{ backgroundImage: `url(${myBackgroundImage})` }}
         >
             <div className=" max-w-2xl rounded-2xl p-10 text-center shadow-xl
-                border border-white/30 
-                bg-white/20 
-                backdrop-blur-sm">
+                border border-white/60 
+                bg-white/50 
+               ">
                 <h1 className="text-4xl md:text-5xl font-bold text-gray-800">
-                    Welcome to the Scribe AI
+                    Dental Bot
                 </h1>
                 <p className="mt-4 text-lg text-gray-600">
-                    This tool helps you automatically fill out complex medical forms by transcribing and analyzing patient consultations. Get started by navigating to the form.
+                    An Intelligent Chatbot for Paitent Data Collection in Dental Camps.
                 </p>
                 <button
                     onClick={goToDetailsPage}

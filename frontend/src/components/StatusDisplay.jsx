@@ -8,7 +8,7 @@ function StatusDisplay({ status, isProcessing }) {
     };
 
     return (
-        <div className="mb-6 rounded-lg border bg-gray-50 p-4 text-center">
+        <div className="mb-6 rounded-lg border bg-gray-50/0 p-4 text-center">
             <p className="text-lg font-semibold text-gray-700">Status</p>
             <p className={`min-h-[28px] text-xl font-bold ${colorClasses[status.color] || 'text-blue-600'}`}>
                 {status.message}

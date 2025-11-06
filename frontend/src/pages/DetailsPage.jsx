@@ -3,6 +3,7 @@ import Header from '../components/Header';
 import StatusDisplay from '../components/StatusDisplay';
 import Controls from '../components/Controls';
 import MedicalForm from '../components/MedicalForm';
+import myBackgroundImage from '../assets/DetailsBgd.jpg';
 
 // --- ICONS (for the new buttons) ---
 const SaveIcon = () => (
@@ -230,10 +231,18 @@ function DetailsPage() {
     };
 
 return (
-        <div className="bg-gray-100 font-sans text-gray-900">
+        <div className="bg-gray-100 font-sans text-gray-900"
+        style={{
+      backgroundImage: `url(${myBackgroundImage})`,
+      backgroundAttachment: 'fixed',
+      backgroundSize: 'cover', // change to 'contain' if you want original image size
+      backgroundRepeat: 'no-repeat',
+      backgroundPosition: 'center',
+      minHeight: '100vh',
+    }}>
             <div className="container mx-auto max-w-5xl p-4 md:p-8">
                 <Header />
-                <main className="rounded-2xl bg-white p-6 shadow-xl md:p-8">
+                <main className="rounded-2xl bg-white/50 p-6 shadow-xl md:p-8">
                     <StatusDisplay status={status} isProcessing={isProcessing} />
                     
                     {/* This component will now correctly show only the record button */}

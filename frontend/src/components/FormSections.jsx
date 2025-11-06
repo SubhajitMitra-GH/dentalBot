@@ -5,7 +5,7 @@ import MicButton from './MicButton';
 
 const Input = ({ id, label, value, onChange, onTranscription, onStatusChange, ...props }) => (
     <div>
-        <label htmlFor={id} className="block text-sm font-medium text-gray-700">{label}</label>
+        <label htmlFor={id} className="block text-lg font-medium text-gray-700">{label}</label>
         <div className="relative mt-1">
             <input 
                 type="text" 
@@ -13,7 +13,7 @@ const Input = ({ id, label, value, onChange, onTranscription, onStatusChange, ..
                 name={id} 
                 value={value} 
                 onChange={onChange} 
-                className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm pr-10" 
+                className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-lg pr-10" 
                 {...props} 
             />
             <MicButton fieldId={id} onTranscription={onTranscription} onStatusChange={onStatusChange} />
@@ -23,14 +23,14 @@ const Input = ({ id, label, value, onChange, onTranscription, onStatusChange, ..
 
 const Textarea = ({ id, label, value, onChange, onTranscription, onStatusChange, ...props }) => (
     <div>
-        <label htmlFor={id} className="block text-sm font-medium text-gray-700">{label}</label>
+        <label htmlFor={id} className="block text-lg font-medium text-gray-700">{label}</label>
         <div className="relative mt-1">
             <textarea 
                 id={id} 
                 name={id} 
                 value={value} 
                 onChange={onChange} 
-                className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm pr-10" 
+                className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-lg pr-10" 
                 {...props}
             ></textarea>
             <MicButton fieldId={id} onTranscription={onTranscription} onStatusChange={onStatusChange} />
@@ -41,7 +41,7 @@ const Textarea = ({ id, label, value, onChange, onTranscription, onStatusChange,
 const RadioGroup = ({ name, value, onChange, options }) => (
     <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
         {options.map(opt => (
-            <label key={opt.value} className="flex items-center text-sm text-gray-700">
+            <label key={opt.value} className="flex items-center text-lg text-gray-700">
                 <input type="radio" name={name} value={opt.value} checked={value === opt.value} onChange={onChange} className="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-500" />
                 <span className="ml-2">{opt.label}</span>
             </label>
@@ -51,14 +51,14 @@ const RadioGroup = ({ name, value, onChange, options }) => (
 
 const YesNoRadio = ({ name, value, onChange, label }) => (
     <div className="flex items-center justify-between p-2 rounded-md bg-gray-50">
-        <span className="text-sm font-medium text-gray-700">{label}</span>
+        <span className="text-lg font-medium text-gray-700">{label}</span>
         <RadioGroup name={name} value={value} onChange={onChange} options={[{ value: 'yes', label: 'Y' }, { value: 'no', label: 'N' }]} />
     </div>
 );
 
 const SectionWrapper = ({ title, children }) => (
-    <fieldset className="p-4 border rounded-lg shadow-sm space-y-4 bg-white">
-        <legend className="text-lg font-semibold text-gray-800 px-2">{title}</legend>
+    <fieldset className="p-4 border rounded-lg shadow-sm space-y-4 bg-white/0">
+        <legend className="text-xl font-semibold text-gray-800 px-2">{title}</legend>
         {children}
     </fieldset>
 );
@@ -89,7 +89,7 @@ export const PatientDemographics = ({ data, onChange, onTranscription, onStatusC
             <Input id="patient_contact" label="Contact:" value={data.patient_contact} onChange={onChange} onTranscription={onTranscription} onStatusChange={onStatusChange}/>
             <Input id="patient_education" label="Education:" value={data.patient_education} onChange={onChange} onTranscription={onTranscription} onStatusChange={onStatusChange}/>
             <div>
-                 <label className="block text-sm font-medium text-gray-700">Gender:</label>
+                 <label className="block text-lg font-medium text-gray-700">Gender:</label>
                  <div className="mt-2"><RadioGroup name="gender" value={data.gender} onChange={onChange} options={[{value: 'male', label: 'Male'}, {value: 'female', label: 'Female'}, {value: 'other', label: 'Other'}]}/></div>
             </div>
         </div>
@@ -101,7 +101,7 @@ export const MedicalHistory = ({ data, onChange, onTranscription, onStatusChange
     <SectionWrapper title="History & Complaint">
         <Textarea id="chief_complaint" rows="3" label="Chief Complaint:" value={data.chief_complaint} onChange={onChange} onTranscription={onTranscription} onStatusChange={onStatusChange}/>
         <div>
-            <p className="text-sm font-medium text-gray-700 mb-2">Past Medical History:</p>
+            <p className="text-lg font-medium text-gray-700 mb-2">Past Medical History:</p>
             <div className="grid grid-cols-2 gap-x-4 gap-y-2 md:grid-cols-3">
                 <YesNoRadio label="Diabetes" name="diabetes" value={data.diabetes} onChange={onChange}/>
                 <YesNoRadio label="Hypertension" name="hypertension" value={data.hypertension} onChange={onChange}/>
