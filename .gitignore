@@ -1,0 +1,67 @@
+# ===================================================================
+# General Project Files
+# ===================================================================
+
+# Operating System files
+.DS_Store
+Thumbs.db
+
+# Log files
+*.log
+*.tmp
+
+# IDE config folders
+.idea/
+.vscode/
+*.swp
+*.swo
+
+
+# ===================================================================
+# Python Backend (for the 'backend' folder)
+# ===================================================================
+
+# Virtual Environment
+# Ignores any 'venv' folder in any directory
+*/venv/
+venv/
+
+# Python cache and compiled files
+__pycache__/
+*.pyc
+
+# Environment variables
+# Ignores all .env files
+.env
+*.env
+
+
+# ===================================================================
+# React Frontend (for the 'frontend' folder)
+# ===================================================================
+
+# Node dependencies
+# Ignores any 'node_modules' folder in any directory
+*/node_modules/
+node_modules/
+
+# Production build output
+*/build/
+build/
+*/dist/
+dist/
+
+# Test coverage
+*/coverage/
+coverage/
+
+# Local environment variables for Create React App
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Debug logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
