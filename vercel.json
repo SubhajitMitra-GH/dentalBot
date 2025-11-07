@@ -2,13 +2,6 @@
   "version": 2,
   "builds": [
     {
-      "src": "api/build_files.sh",
-      "use": "@vercel/static-build",
-      "config": {
-        "distDir": "public"
-      }
-    },
-    {
       "src": "api/app.py",
       "use": "@vercel/python",
       "config": {
