@@ -5,18 +5,26 @@ from flask import Flask, render_template, request, jsonify
 from flask_cors import CORS
 import uuid
 import json
-from dotenv import load_dotenv # <-- 1. IMPORT THE LIBRARY
+from dotenv import load_dotenv
 
 # --- Configuration ---
-load_dotenv() # <-- 2. LOAD THE .env FILE
+load_dotenv()
 
 try:
-    # This will now find the key loaded from your .env file
-    genai.configure(api_key=os.environ["GOOGLE_API_KEY"]) 
+    genai.configure(api_key=os.environ["GOOGLE_API_KEY"])
 except KeyError:
     print("FATAL: GOOGLE_API_KEY environment variable not set.")
-    exit()
+    # In a serverless environment, we still want the app to load
+    # The function will just fail if this key is missing.
+    pass
 
+# --- Vercel-Specific Paths ---
+# We can only write to the /tmp directory in a Vercel Serverless Function
+TEMP_DIR = "/tmp"
+CACHE_DIR = "/tmp/whisper_models"
+
+# Ensure cache directory exists
+os.makedirs(CACHE_DIR, exist_ok=True)
 
 # --- Initializations ---
 app = Flask(__name__)
@@ -24,17 +32,19 @@ CORS(app)
 
 print("Loading Whisper model...")
 try:
-    whisper_model = whisper.load_model("base") # Using 'base' for better accuracy on longer audio
+    # Use the /tmp directory for downloading the model
+    # This caches the model between "warm" invocations
+    whisper_model = whisper.load_model("base", download_root=CACHE_DIR)
     print("Whisper model loaded successfully.")
 except Exception as e:
     print(f"Error loading Whisper model: {e}")
-    exit()
+    # Don't exit, allow the app to be deployed, but log the error
+    whisper_model = None
 
 gemini_model = genai.GenerativeModel('gemini-2.5-flash')
 
 
 # --- VOICE-FILLABLE SCHEMA ---
-# This schema ONLY includes the fields that we want the AI to fill via voice.
 VOICE_FILLABLE_SCHEMA = {
     'organised_by': "The name of the organization conducting the event.",
     'department': "The specific department involved.",
@@ -66,16 +76,18 @@ VOICE_FILLABLE_SCHEMA = {
 
 # --- Flask Routes ---
 
-
-
 @app.route('/process_audio', methods=['POST'])
 def process_audio():
     print("\n--- Request received for detailed form processing ---")
+    if whisper_model is None:
+        return jsonify({'error': 'Whisper model failed to load. Check server logs.'}), 500
+
     if 'audio_data' not in request.files:
         return jsonify({'error': 'No audio file found'}), 400
 
     audio_file = request.files['audio_data']
-    temp_audio_path = f"temp_audio_{uuid.uuid4()}.webm"
+    # Use the /tmp directory for saving the temporary file
+    temp_audio_path = os.path.join(TEMP_DIR, f"temp_audio_{uuid.uuid4()}.webm")
     audio_file.save(temp_audio_path)
     print(f"Audio saved to: {temp_audio_path}")
 
@@ -92,7 +104,6 @@ def process_audio():
         # 2. Use a sophisticated prompt to extract all fields into a JSON object
         print("Extracting structured data with Gemini...")
         
-        # Create a string representing the desired JSON keys from our new schema
         schema_description = "\n".join([f'- "{key}": "{description}"' for key, description in VOICE_FILLABLE_SCHEMA.items()])
 
         prompt = f"""
@@ -120,11 +131,9 @@ def process_audio():
         
         response = gemini_model.generate_content(prompt)
         
-        # Clean the response to get a valid JSON string
         response_text = response.text.strip().replace('```json', '').replace('```', '')
         print(f"Gemini Raw Response: {response_text}")
 
-        # Parse the JSON string into a Python dictionary
         extracted_data = json.loads(response_text)
         print(f"Successfully Parsed JSON: {extracted_data}")
 
@@ -144,40 +153,41 @@ def process_audio():
             os.remove(temp_audio_path)
             print(f"Cleaned up temp file: {temp_audio_path}")
 
-# --- A new, simpler route for transcribing single fields ---
 @app.route('/transcribe', methods=['POST'])
 def transcribe_field():
     print("\n--- Request received for single field transcription ---")
+    if whisper_model is None:
+        return jsonify({'error': 'Whisper model failed to load. Check server logs.'}), 500
+
     if 'audio_data' not in request.files:
         return jsonify({'error': 'No audio file found'}), 400
 
     audio_file = request.files['audio_data']
-    # Use a unique filename to avoid conflicts
-    temp_audio_path = f"temp_audio_{uuid.uuid4()}.webm"
+    # Use the /tmp directory for saving the temporary file
+    temp_audio_path = os.path.join(TEMP_DIR, f"temp_audio_{uuid.uuid4()}.webm")
     audio_file.save(temp_audio_path)
     print(f"Audio saved to: {temp_audio_path}")
 
     try:
-        # 1. Transcribe the audio
         print("Transcribing audio...")
-        # Using fp16=False is recommended for higher accuracy
         result = whisper_model.transcribe(temp_audio_path, fp16=False)
         transcribed_text = result['text']
         print(f"Transcription result: '{transcribed_text}'")
 
         if not transcribed_text.strip():
-            return jsonify({'text': ''}) # Return empty if no speech detected
+            return jsonify({'text': ''})
 
-        # 2. Return the transcribed text
         return jsonify({'text': transcribed_text})
 
     except Exception as e:
         print(f"An error occurred during transcription: {e}")
         return jsonify({'error': str(e)}), 500
     finally:
-        # 3. Clean up the temporary file
         if os.path.exists(temp_audio_path):
             os.remove(temp_audio_path)
             print(f"Cleaned up temp file: {temp_audio_path}")
+
+# This check is not strictly needed for Vercel, but it's good practice
+# and allows you to still run `python api/app.py` locally for testing.
 if __name__ == '__main__':
     app.run(debug=True)

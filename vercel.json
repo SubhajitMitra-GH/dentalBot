@@ -1,0 +1,37 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "api/build_files.sh",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "public"
+      }
+    },
+    {
+      "src": "api/app.py",
+      "use": "@vercel/python",
+      "config": {
+        "maxLambdaSize": "100mb",
+        "runtime": "python3.9"
+      }
+    },
+    {
+      "src": "frontend/package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "frontend/dist"
+      }
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/api/:match*",
+      "destination": "/api/app"
+    },
+    {
+      "source": "/:path*",
+      "destination": "/frontend/dist/index.html"
+    }
+  ]
+}
