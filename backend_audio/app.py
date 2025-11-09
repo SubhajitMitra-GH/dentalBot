@@ -1,9 +1,9 @@
 # backend_audio/app.py
 from flask import Flask, request, jsonify
-import whisper, os, tempfile
+from flask_cors import CORS
 
 app = Flask(__name__)
-
+CORS(app)
 model = whisper.load_model("tiny")
 
 @app.route("/transcribe", methods=["POST"])
