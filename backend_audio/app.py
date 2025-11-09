@@ -4,14 +4,9 @@ from flask_cors import CORS
 import whisper, os, tempfile
 
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)
+CORS(app, origins=["https://dentalbot-3lei.onrender.com"], supports_credentials=True)
 
-@app.after_request
-def after_request(response):
-    response.headers.add("Access-Control-Allow-Origin", "*")
-    response.headers.add("Access-Control-Allow-Headers", "Content-Type, Authorization")
-    response.headers.add("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, DELETE")
-    return response
+
 model = whisper.load_model("tiny")
 
 @app.route("/transcribe", methods=["POST"])
@@ -38,5 +33,3 @@ def transcribe():
 
 
 
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=10000)
