@@ -4,4 +4,5 @@ openai-whisper==20231117
 numpy==1.26.4
 gunicorn==21.2.0
 torch==2.2.2+cpu
+torchaudio==2.2.2+cpu
 -f https://download.pytorch.org/whl/torch_stable.html
