@@ -57,7 +57,7 @@ function DetailsPage() {
         try {
             const response = await fetch('https://dentalbotform.onrender.com/process_audio', {
                 method: 'POST',
-                body: autoFormData
+                body: audioFormData
             });
             if (!response.ok) {
                 const errorResult = await response.json();
