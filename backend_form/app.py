@@ -8,13 +8,14 @@ import google.generativeai as genai
 
 app = Flask(__name__)
 
-CORS(
-    app,
-    resources={r"/*": {"origins": "*"}},
-    allow_headers=["Content-Type", "Authorization", "Access-Control-Allow-Credentials"],
-    supports_credentials=True,
-    methods=["GET", "POST", "OPTIONS", "PUT", "DELETE"],
-)
+CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)
+
+@app.after_request
+def after_request(response):
+    response.headers.add("Access-Control-Allow-Origin", "*")
+    response.headers.add("Access-Control-Allow-Headers", "Content-Type, Authorization")
+    response.headers.add("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, DELETE")
+    return response
 
 # Configure Gemini
 genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
@@ -174,8 +175,10 @@ def fill_form():
         return jsonify(result), 500
     return jsonify(result), 200
 
-@app.route("/process_audio", methods=["POST"])
+@app.route("/process_audio", methods=["POST", "OPTIONS"])
 def process_audio():
+    if request.method == "OPTIONS":
+        return '', 204
     if "audio_data" not in request.files:
         return jsonify({"error": "No audio file"}), 400
 
