@@ -80,6 +80,8 @@ function MicButton({ onTranscription, fieldId, onStatusChange }) {
     const transcribeAudio = async (audioBlob) => {
         setIsProcessing(true); // <-- SET PROCESSING TRUE
         const formData = new FormData();
+formData.append("audio_data", audioBlob, "recording.webm");
+
         formData.append('audio_data', audioBlob);
 
         try {

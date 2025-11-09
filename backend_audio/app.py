@@ -14,22 +14,28 @@ def after_request(response):
     return response
 model = whisper.load_model("tiny")
 
-@app.route("/transcribe", methods=["POST", "OPTIONS"])
+@app.route("/transcribe", methods=["POST"])
 def transcribe():
-    # Handle CORS preflight request
-    if request.method == "OPTIONS":
-        return '', 204
-
     if "audio_data" not in request.files:
-        return jsonify({"error": "No audio file"}), 400
+        return jsonify({"error": "No audio file received"}), 400
 
     audio = request.files["audio_data"]
-    with tempfile.NamedTemporaryFile(delete=False, suffix=".webm") as tmp:
-        audio.save(tmp.name)
-        result = model.transcribe(tmp.name, fp16=False)
-        os.remove(tmp.name)
 
-    return jsonify({"text": result["text"].strip()})
+    try:
+        with tempfile.NamedTemporaryFile(delete=False, suffix=".webm") as tmp:
+            audio.save(tmp.name)
+            print(f"Saved temp file at {tmp.name}")
+
+            result = model.transcribe(tmp.name, fp16=False)
+            os.remove(tmp.name)
+
+        text = result.get("text", "").strip()
+        return jsonify({"text": text})
+
+    except Exception as e:
+        print("❌ Transcription failed:", e)
+        return jsonify({"error": str(e)}), 500
+
 
 
 if __name__ == "__main__":
