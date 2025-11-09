@@ -7,10 +7,10 @@ app = Flask(__name__)
 
 # Configure Gemini
 genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
-gemini_model = genai.GenerativeModel("gemini-1.5-flash")
+gemini_model = genai.GenerativeModel("gemini-2.5-flash")
 
 # 🔗 Audio backend endpoint
-AUDIO_BACKEND_URL = "https://scribeAI-audio.onrender.com/transcribe"
+AUDIO_BACKEND_URL = "https://dentalaudio.onrender.com/transcribe"
 
 @app.route("/fill_form", methods=["POST"])
 def fill_form():
